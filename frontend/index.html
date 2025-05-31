@@ -221,6 +221,21 @@
             display: none;
         }
 
+        .api-status {
+            background: #f0fff4;
+            color: #2d6e3b;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: none;
+            text-align: center;
+        }
+
+        .api-status.error {
+            background: #fee;
+            color: #c33;
+        }
+
         .info-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -269,6 +284,8 @@
         </div>
 
         <div class="main-card">
+            <div class="api-status" id="apiStatus"></div>
+            
             <div class="upload-section">
                 <div class="upload-area" id="uploadArea">
                     <div class="upload-icon">📸</div>
@@ -318,7 +335,14 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://satclassification-production.up.railway.app'; // Change this to your deployed API URL
+        // Try multiple URL configurations
+        const POSSIBLE_URLS = [
+            'https://satclassification-production.up.railway.app',
+            'http://satclassification-production.up.railway.app',  
+            'https://web-production-xxxx.up.railway.app', // Replace with your actual Railway URL
+        ];
+        
+        let API_BASE_URL = null;
         
         const fileInput = document.getElementById('fileInput');
         const uploadArea = document.getElementById('uploadArea');
@@ -330,6 +354,7 @@
         const error = document.getElementById('error');
         const results = document.getElementById('results');
         const resultsContainer = document.getElementById('resultsContainer');
+        const apiStatus = document.getElementById('apiStatus');
 
         let selectedFile = null;
 
@@ -382,7 +407,10 @@
         }
 
         predictBtn.addEventListener('click', async () => {
-            if (!selectedFile) return;
+            if (!selectedFile || !API_BASE_URL) {
+                showError('API not available. Please check the connection.');
+                return;
+            }
 
             showLoading();
             hideError();
@@ -394,18 +422,21 @@
 
                 const response = await fetch(`${API_BASE_URL}/predict`, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    mode: 'cors'
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
 
                 const data = await response.json();
                 displayResults(data);
 
             } catch (err) {
-                showError(`Prediction failed: ${err.message}. Make sure the API server is running.`);
+                console.error('Prediction error:', err);
+                showError(`Prediction failed: ${err.message}`);
             } finally {
                 hideLoading();
             }
@@ -472,19 +503,51 @@
             results.style.display = 'none';
         }
 
-        // Check API health on load
-        async function checkAPIHealth() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/health`);
-                if (response.ok) {
-                    console.log('API is healthy');
-                }
-            } catch (err) {
-                console.warn('API not accessible:', err.message);
-            }
+        function showApiStatus(message, isError = false) {
+            apiStatus.textContent = message;
+            apiStatus.className = isError ? 'api-status error' : 'api-status';
+            apiStatus.style.display = 'block';
         }
 
-        checkAPIHealth();
+        function hideApiStatus() {
+            apiStatus.style.display = 'none';
+        }
+
+        // Check API health and determine working URL
+        async function findWorkingAPI() {
+            showApiStatus('Connecting to API...', false);
+            
+            for (const url of POSSIBLE_URLS) {
+                try {
+                    console.log(`Testing API at: ${url}`);
+                    const response = await fetch(`${url}/health`, {
+                        method: 'GET',
+                        mode: 'cors',
+                        headers: {
+                            'Accept': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        API_BASE_URL = url;
+                        console.log(`API connected successfully at: ${url}`);
+                        showApiStatus(`✅ Connected to API (${data.model_status})`, false);
+                        setTimeout(hideApiStatus, 3000);
+                        return true;
+                    }
+                } catch (err) {
+                    console.log(`Failed to connect to ${url}:`, err.message);
+                }
+            }
+            
+            console.error('Could not connect to any API endpoint');
+            showApiStatus('❌ Cannot connect to API. Please check if the server is running.', true);
+            return false;
+        }
+
+        // Initialize app
+        findWorkingAPI();
     </script>
 </body>
 </html>
