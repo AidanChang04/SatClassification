@@ -5,3 +5,4 @@ pillow==9.2.0
 opencv-python-headless==4.6.0.66
 python-multipart==0.0.5
 numpy==1.21.6
+requests

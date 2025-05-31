@@ -8,6 +8,8 @@ import io
 import uvicorn
 from pathlib import Path
 import os
+import requests
+import hashlib
 
 app = FastAPI(title="Satellite Image Classifier API", version="1.0.0")
 
@@ -23,34 +25,7 @@ app.add_middleware(
 BASE_DIR = Path(__file__).parent
 MODEL_PATH = BASE_DIR / "tuned_deep_seq_model.h5"
 
-# Debug information
-print(f"Current working directory: {os.getcwd()}")
-print(f"Base directory: {BASE_DIR}")
-print(f"Model path: {MODEL_PATH}")
-print(f"Model file exists: {MODEL_PATH.exists()}")
-print(f"Files in current directory: {os.listdir('.')}")
-
-# Check if it's a Git LFS pointer file
-if MODEL_PATH.exists():
-    file_size = MODEL_PATH.stat().st_size
-    print(f"Model file size: {file_size} bytes")
-    
-    # Read first few lines to check if it's a Git LFS pointer
-    with open(MODEL_PATH, 'rb') as f:
-        first_bytes = f.read(100)
-        print(f"First 100 bytes: {first_bytes}")
-    
-    # If file is very small, it might be a Git LFS pointer
-    if file_size < 1000:
-        print("WARNING: Model file is very small - might be a Git LFS pointer file")
-        with open(MODEL_PATH, 'r') as f:
-            content = f.read()
-            print(f"File content: {content}")
-
-# Alternative: Check if file exists
-if not MODEL_PATH.exists():
-    MODEL_PATH = "tuned_deep_seq_model.h5"  # Fallback to relative path
-    print(f"Using fallback path: {MODEL_PATH}")
+MODEL_DOWNLOAD_URL = "https://drive.google.com/file/d/1gSWweMR6Do5kCtGylKK8LMD9Zh3AVeOG/view?usp=sharing"  # Replace with actual URL
 
 model = None
 
@@ -67,22 +42,75 @@ CLASS_NAMES = [
     'SeaLake'
 ]
 
+def download_model():
+    """Download model from external URL"""
+    try:
+        print(f"Downloading model from: {MODEL_DOWNLOAD_URL}")
+        response = requests.get(MODEL_DOWNLOAD_URL, stream=True)
+        response.raise_for_status()
+        
+        total_size = int(response.headers.get('content-length', 0))
+        print(f"Model size: {total_size / (1024*1024):.1f} MB")
+        
+        with open(MODEL_PATH, 'wb') as f:
+            downloaded = 0
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+                    downloaded += len(chunk)
+                    if total_size > 0:
+                        progress = (downloaded / total_size) * 100
+                        if downloaded % (1024*1024) == 0:  # Print every MB
+                            print(f"Downloaded: {progress:.1f}%")
+        
+        print("Model download completed!")
+        return True
+        
+    except Exception as e:
+        print(f"Error downloading model: {e}")
+        return False
+
+def verify_model_file():
+    """Check if model file is valid (not a Git LFS pointer)"""
+    if not MODEL_PATH.exists():
+        return False
+    
+    file_size = MODEL_PATH.stat().st_size
+    print(f"Model file size: {file_size} bytes")
+    
+    # If file is very small, it's likely a Git LFS pointer
+    if file_size < 1000:
+        print("Model file appears to be a Git LFS pointer")
+        return False
+    
+    return True
+
 @app.on_event("startup")
 async def load_model():
     global model
+    
     try:
-        print(f"Attempting to load model from: {MODEL_PATH}")
+        # Check if we have a valid model file
+        if not verify_model_file():
+            print("Model file is invalid or missing, attempting to download...")
+            
+            if MODEL_DOWNLOAD_URL == "YOUR_MODEL_DOWNLOAD_URL_HERE":
+                print("ERROR: MODEL_DOWNLOAD_URL not configured!")
+                print("Please set MODEL_DOWNLOAD_URL to your model's download link")
+                return
+            
+            # Download the model
+            if not download_model():
+                print("Failed to download model")
+                return
+        
+        # Load the model
+        print(f"Loading model from: {MODEL_PATH}")
         model = tf.keras.models.load_model(MODEL_PATH)
         print("Model loaded successfully!")
+        
     except Exception as e:
         print(f"Error loading model: {e}")
-        print(f"Error type: {type(e)}")
-        
-        # Additional debug info
-        if Path(MODEL_PATH).exists():
-            print(f"File exists but couldn't load. File size: {Path(MODEL_PATH).stat().st_size}")
-        else:
-            print("Model file does not exist")
 
 def preprocess_image(image_bytes):
     """Preprocess uploaded image for model prediction"""
@@ -110,9 +138,9 @@ async def root():
         "model_loaded": model is not None,
         "debug_info": {
             "model_path": str(MODEL_PATH),
-            "model_file_exists": Path(MODEL_PATH).exists(),
-            "working_directory": os.getcwd(),
-            "files_in_directory": os.listdir('.') if os.path.exists('.') else []
+            "model_file_exists": MODEL_PATH.exists(),
+            "model_file_size": MODEL_PATH.stat().st_size if MODEL_PATH.exists() else 0,
+            "working_directory": os.getcwd()
         }
     }
 
