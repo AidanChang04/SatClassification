@@ -891,7 +891,11 @@
                 }
 
                 const result = await response.json();
-                displayResults(result);
+                if (result.success) {
+                    displayResults(result.all_predictions);
+                } else {
+                    showError('Prediction failed: ' + (result.error || 'Unknown error'));
+                }
                 
                 // Show API status if available in headers
                 const apiStatusHeader = response.headers.get('X-API-Status');
