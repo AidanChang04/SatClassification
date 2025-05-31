@@ -23,9 +23,11 @@ app.add_middleware(
 )
 
 BASE_DIR = Path(__file__).parent
-MODEL_PATH = "D:\FINAL YEAR\SEM 2\ODL\Website\backend\tuned_deep_seq_model.h5"
+MODEL_PATH = BASE_DIR / "tuned_deep_seq_model.h5"
 
-MODEL_DOWNLOAD_URL = "https://drive.google.com/uc?id=1gSWweMR6Do5kCtGylKK8LMD9Zh3AVeOG&export=download"  # Replace with actual URL
+MODEL_DOWNLOAD_URL = "https://drive.google.com/uc?id=1gSWweMR6Do5kCtGylKK8LMD9Zh3AVeOG&export=download"
+
+EXPECTED_MODEL_HASH = "945781c294c4327b99641c33853adc67c876aa86225907e2d52487d6cf98d4a6"
 
 model = None
 
@@ -52,7 +54,9 @@ def download_model():
         total_size = int(response.headers.get('content-length', 0))
         print(f"Model size: {total_size / (1024*1024):.1f} MB")
         
-        with open(MODEL_PATH, 'wb') as f:
+        model_path_obj = Path(MODEL_PATH) if isinstance(MODEL_PATH, str) else MODEL_PATH
+        
+        with open(model_path_obj, 'wb') as f:
             downloaded = 0
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
@@ -72,10 +76,12 @@ def download_model():
 
 def verify_model_file():
     """Check if model file is valid (not a Git LFS pointer)"""
-    if not MODEL_PATH.exists():
+    model_path_obj = Path(MODEL_PATH) if isinstance(MODEL_PATH, str) else MODEL_PATH
+    
+    if not model_path_obj.exists():
         return False
     
-    file_size = MODEL_PATH.stat().st_size
+    file_size = model_path_obj.stat().st_size
     print(f"Model file size: {file_size} bytes")
     
     # If file is very small, it's likely a Git LFS pointer
@@ -131,15 +137,16 @@ def preprocess_image(image_bytes):
 
 @app.get("/")
 async def root():
+    model_path_obj = Path(MODEL_PATH) if isinstance(MODEL_PATH, str) else MODEL_PATH
     return {
         "message": "Satellite Image Classifier API",
         "version": "1.0.0",
         "status": "active",
         "model_loaded": model is not None,
         "debug_info": {
-            "model_path": str(MODEL_PATH),
-            "model_file_exists": MODEL_PATH.exists(),
-            "model_file_size": MODEL_PATH.stat().st_size if MODEL_PATH.exists() else 0,
+            "model_path": str(model_path_obj),
+            "model_file_exists": model_path_obj.exists(),
+            "model_file_size": model_path_obj.stat().st_size if model_path_obj.exists() else 0,
             "working_directory": os.getcwd()
         }
     }
