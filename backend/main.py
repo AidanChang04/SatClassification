@@ -6,6 +6,8 @@ from PIL import Image
 import cv2
 import io
 import uvicorn
+from pathlib import Path
+import os
 
 app = FastAPI(title="Satellite Image Classifier API", version="1.0.0")
 
@@ -18,8 +20,38 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load model once at startup
-MODEL_PATH = "tuned_deep_seq_model.h5"
+BASE_DIR = Path(__file__).parent
+MODEL_PATH = BASE_DIR / "tuned_deep_seq_model.h5"
+
+# Debug information
+print(f"Current working directory: {os.getcwd()}")
+print(f"Base directory: {BASE_DIR}")
+print(f"Model path: {MODEL_PATH}")
+print(f"Model file exists: {MODEL_PATH.exists()}")
+print(f"Files in current directory: {os.listdir('.')}")
+
+# Check if it's a Git LFS pointer file
+if MODEL_PATH.exists():
+    file_size = MODEL_PATH.stat().st_size
+    print(f"Model file size: {file_size} bytes")
+    
+    # Read first few lines to check if it's a Git LFS pointer
+    with open(MODEL_PATH, 'rb') as f:
+        first_bytes = f.read(100)
+        print(f"First 100 bytes: {first_bytes}")
+    
+    # If file is very small, it might be a Git LFS pointer
+    if file_size < 1000:
+        print("WARNING: Model file is very small - might be a Git LFS pointer file")
+        with open(MODEL_PATH, 'r') as f:
+            content = f.read()
+            print(f"File content: {content}")
+
+# Alternative: Check if file exists
+if not MODEL_PATH.exists():
+    MODEL_PATH = "tuned_deep_seq_model.h5"  # Fallback to relative path
+    print(f"Using fallback path: {MODEL_PATH}")
+
 model = None
 
 CLASS_NAMES = [
@@ -39,10 +71,18 @@ CLASS_NAMES = [
 async def load_model():
     global model
     try:
+        print(f"Attempting to load model from: {MODEL_PATH}")
         model = tf.keras.models.load_model(MODEL_PATH)
         print("Model loaded successfully!")
     except Exception as e:
         print(f"Error loading model: {e}")
+        print(f"Error type: {type(e)}")
+        
+        # Additional debug info
+        if Path(MODEL_PATH).exists():
+            print(f"File exists but couldn't load. File size: {Path(MODEL_PATH).stat().st_size}")
+        else:
+            print("Model file does not exist")
 
 def preprocess_image(image_bytes):
     """Preprocess uploaded image for model prediction"""
@@ -67,7 +107,13 @@ async def root():
         "message": "Satellite Image Classifier API",
         "version": "1.0.0",
         "status": "active",
-        "model_loaded": model is not None
+        "model_loaded": model is not None,
+        "debug_info": {
+            "model_path": str(MODEL_PATH),
+            "model_file_exists": Path(MODEL_PATH).exists(),
+            "working_directory": os.getcwd(),
+            "files_in_directory": os.listdir('.') if os.path.exists('.') else []
+        }
     }
 
 @app.get("/health")

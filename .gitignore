@@ -11,7 +11,7 @@ env.bak/
 venv.bak/
 
 # TensorFlow/Keras
-*.h5
+#*.h5
 *.hdf5
 *.pb
 checkpoints/
