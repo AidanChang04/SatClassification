@@ -23,9 +23,9 @@ app.add_middleware(
 )
 
 BASE_DIR = Path(__file__).parent
-MODEL_PATH = BASE_DIR / "tuned_deep_seq_model.h5"
+MODEL_PATH = "D:\FINAL YEAR\SEM 2\ODL\Website\backend\tuned_deep_seq_model.h5"
 
-MODEL_DOWNLOAD_URL = "https://drive.google.com/file/d/1gSWweMR6Do5kCtGylKK8LMD9Zh3AVeOG/view?usp=sharing"  # Replace with actual URL
+MODEL_DOWNLOAD_URL = "https://drive.google.com/uc?id=1gSWweMR6Do5kCtGylKK8LMD9Zh3AVeOG&export=download"  # Replace with actual URL
 
 model = None
 
