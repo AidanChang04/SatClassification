@@ -13,83 +13,211 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0a0a0f;
             min-height: 100vh;
-            color: #333;
+            color: #e0e0ff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated space background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(79, 70, 229, 0.2) 0%, transparent 50%);
+            animation: cosmicDrift 20s ease-in-out infinite alternate;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.15), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.1), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.1), transparent),
+                radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.15), transparent);
+            background-repeat: repeat;
+            background-size: 100px 100px;
+            animation: starfield 50s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes cosmicDrift {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(1deg) scale(1.05); }
+            50% { transform: rotate(0deg) scale(1.1); }
+            75% { transform: rotate(-1deg) scale(1.05); }
+        }
+
+        @keyframes starfield {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100px); }
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .header {
             text-align: center;
             margin-bottom: 40px;
-            color: white;
+            animation: fadeInDown 1s ease-out;
         }
 
         .header h1 {
             font-size: 3rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #a855f7 0%, #3b82f6 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
         }
 
         .header p {
             font-size: 1.2rem;
-            opacity: 0.9;
+            color: #b8b8d4;
+            animation: fadeIn 1s ease-out 0.5s both;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(168, 85, 247, 0.5); }
+            to { text-shadow: 0 0 30px rgba(168, 85, 247, 0.8), 0 0 40px rgba(59, 130, 246, 0.3); }
         }
 
         .main-card {
-            background: white;
-            border-radius: 20px;
+            background: rgba(15, 15, 25, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 25px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                0 0 50px rgba(168, 85, 247, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             margin-bottom: 30px;
+            animation: slideUp 0.8s ease-out 0.3s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .upload-section {
             text-align: center;
             margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
         }
 
         .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
+            border: 2px dashed rgba(168, 85, 247, 0.5);
+            border-radius: 20px;
             padding: 60px 20px;
-            background: #f8f9ff;
-            transition: all 0.3s ease;
+            background: rgba(30, 25, 50, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
             position: relative;
             overflow: hidden;
         }
 
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(168, 85, 247, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
         .upload-area:hover {
-            border-color: #764ba2;
-            background: #f0f2ff;
-            transform: translateY(-2px);
+            border-color: rgba(168, 85, 247, 0.8);
+            background: rgba(30, 25, 50, 0.5);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 50px rgba(168, 85, 247, 0.2);
+        }
+
+        .upload-area:hover::before {
+            opacity: 1;
         }
 
         .upload-area.dragover {
-            border-color: #28a745;
-            background: #f0fff4;
+            border-color: rgba(16, 185, 129, 0.8);
+            background: rgba(16, 185, 129, 0.1);
+            transform: scale(1.05);
         }
 
         .upload-icon {
             font-size: 4rem;
-            color: #667eea;
             margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
 
         .upload-text {
             font-size: 1.3rem;
             margin-bottom: 10px;
-            color: #333;
+            color: #e0e0ff;
         }
 
         .upload-subtext {
-            color: #666;
+            color: #9ca3af;
             font-size: 0.9rem;
         }
 
@@ -98,59 +226,117 @@
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #3b82f6 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 30px;
+            padding: 15px 35px;
+            border-radius: 50px;
             font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             margin: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(1.02);
         }
 
         .btn:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         .preview-section {
             display: none;
             margin: 30px 0;
+            animation: fadeInScale 0.5s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .image-preview {
             max-width: 400px;
             max-height: 400px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(168, 85, 247, 0.2);
             margin: 0 auto;
             display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .image-preview:hover {
+            transform: scale(1.05);
         }
 
         .results-section {
             display: none;
             margin-top: 30px;
+            animation: slideUpFade 0.6s ease-out;
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .result-card {
-            background: #f8f9ff;
-            border-radius: 15px;
+            background: rgba(30, 25, 50, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 20px;
             padding: 25px;
             margin-bottom: 20px;
-            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(168, 85, 247, 0.2);
         }
 
         .top-prediction {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #3b82f6 100%);
             color: white;
-            border-left: none;
+            border: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.5); }
         }
 
         .prediction-item {
@@ -158,7 +344,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .prediction-item:last-child {
@@ -178,17 +364,23 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 4px;
-            margin-top: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 8px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: rgba(255,255,255,0.8);
-            border-radius: 4px;
-            transition: width 0.5s ease;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(168, 85, 247, 0.8));
+            border-radius: 10px;
+            transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: progressGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes progressGlow {
+            from { box-shadow: 0 0 10px rgba(168, 85, 247, 0.3); }
+            to { box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); }
         }
 
         .loading {
@@ -198,12 +390,12 @@
         }
 
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 4px solid rgba(168, 85, 247, 0.2);
+            border-top: 4px solid #a855f7;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite, spinGlow 2s ease-in-out infinite alternate;
             margin: 0 auto 20px;
         }
 
@@ -212,49 +404,206 @@
             100% { transform: rotate(360deg); }
         }
 
+        @keyframes spinGlow {
+            from { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+            to { box-shadow: 0 0 30px rgba(168, 85, 247, 0.6); }
+        }
+
         .error {
-            background: #fee;
-            color: #c33;
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
             padding: 15px;
             border-radius: 10px;
             margin: 20px 0;
             display: none;
+            backdrop-filter: blur(10px);
         }
 
         .api-status {
-            background: #f0fff4;
-            color: #2d6e3b;
-            padding: 10px;
-            border-radius: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 12px;
+            border-radius: 10px;
             margin: 10px 0;
             display: none;
             text-align: center;
+            backdrop-filter: blur(10px);
         }
 
         .api-status.error {
-            background: #fee;
-            color: #c33;
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.3);
         }
 
         .info-section {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
             margin-top: 40px;
+            animation: fadeIn 1s ease-out 1s both;
         }
 
         .info-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
+            background: rgba(15, 15, 25, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            padding: 30px;
+            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(168, 85, 247, 0.2);
+        }
+
+        .info-card:hover::before {
+            opacity: 1;
+        }
+
+        .info-card.expanded {
+            transform: scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(168, 85, 247, 0.3);
         }
 
         .info-icon {
             font-size: 2.5rem;
             margin-bottom: 15px;
-            color: #667eea;
+            animation: iconFloat 4s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(2deg); }
+            50% { transform: translateY(0px) rotate(0deg); }
+            75% { transform: translateY(-3px) rotate(-2deg); }
+        }
+
+        .info-card h3 {
+            color: #e0e0ff;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-card > p {
+            color: #b8b8d4;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 15px;
+        }
+
+        .expandable-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .expandable-content.expanded {
+            max-height: 1000px;
+        }
+
+        .expand-indicator {
+            color: rgba(168, 85, 247, 0.8);
+            font-size: 0.9rem;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-card:hover .expand-indicator {
+            color: rgba(168, 85, 247, 1);
+        }
+
+        .detail-content {
+            text-align: left;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .land-class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .land-class-item {
+            background: rgba(30, 25, 50, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(168, 85, 247, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .land-class-item:hover {
+            background: rgba(30, 25, 50, 0.8);
+            border-color: rgba(168, 85, 247, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .land-class-emoji {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .land-class-name {
+            font-size: 0.8rem;
+            color: #b8b8d4;
+        }
+
+        .architecture-layer {
+            background: rgba(30, 25, 50, 0.3);
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid rgba(168, 85, 247, 0.5);
+        }
+
+        .usage-item {
+            background: rgba(30, 25, 50, 0.3);
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid rgba(59, 130, 246, 0.5);
+        }
+
+        .usage-title {
+            font-weight: 600;
+            color: #e0e0ff;
+            margin-bottom: 5px;
+        }
+
+        .usage-desc {
+            font-size: 0.9rem;
+            color: #b8b8d4;
         }
 
         @media (max-width: 768px) {
@@ -272,6 +621,15 @@
             
             .upload-area {
                 padding: 40px 15px;
+            }
+
+            .info-section {
+                grid-template-columns: 1fr;
+            }
+
+            .land-class-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 10px;
             }
         }
     </style>
@@ -316,50 +674,164 @@
         </div>
 
         <div class="info-section">
-            <div class="info-card">
+            <div class="info-card" onclick="toggleExpand(this)">
                 <div class="info-icon">🤖</div>
-                <h3>AI-Powered</h3>
-                <p>Advanced convolutional neural network trained on satellite imagery</p>
+                <h3>AI-Powered CNN</h3>
+                <p>Deep Sequential Convolutional Neural Network</p>
+                <div class="expand-indicator">Click to explore architecture ↓</div>
+                <div class="expandable-content">
+                    <div class="detail-content">
+                        <h4 style="color: #a855f7; margin-bottom: 15px;">Model Architecture</h4>
+                        <div class="architecture-layer">
+                            <strong>Input Layer:</strong> 64×64×3 RGB images
+                        </div>
+                        <div class="architecture-layer">
+                            <strong>Conv2D Block 1:</strong> 32 filters, 3×3 kernel, ReLU activation
+                        </div>
+                        <div class="architecture-layer">
+                            <strong>MaxPooling2D:</strong> 2×2 pool size
+                        </div>
+                        <div class="architecture-layer">
+                            <strong>Conv2D Block 2:</strong> 64 filters, 3×3 kernel, ReLU activation
+                        </div>
+                        <div class="architecture-layer">
+                            <strong>MaxPooling2D:</strong> 2×2 pool size
+                        </div>
+                        <div class="architecture-layer">
+                            <strong>Conv2D Block 3:</strong> 128 filters, 3×3 kernel, ReLU activation
+                        </div>
+                        <div class="architecture-layer">
+                            <strong>Flatten Layer:</strong> Feature vector conversion
+                        </div>
+                        <div class="architecture-layer">
+                            <strong>Dense Layer:</strong> 128 neurons, ReLU activation
+                        </div>
+                        <div class="architecture-layer">
+                            <strong>Output Layer:</strong> 10 neurons, Softmax activation
+                        </div>
+                        <p style="margin-top: 15px; color: #b8b8d4; font-size: 0.9rem;">
+                            Trained on EuroSAT dataset with data augmentation and dropout regularization for robust land cover classification.
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="info-card">
+
+            <div class="info-card" onclick="toggleExpand(this)">
                 <div class="info-icon">🌍</div>
                 <h3>10 Land Classes</h3>
-                <p>Classifies forests, urban areas, water bodies, agriculture, and more</p>
+                <p>Comprehensive land cover classification categories</p>
+                <div class="expand-indicator">Click to see all classes ↓</div>
+                <div class="expandable-content">
+                    <div class="detail-content">
+                        <h4 style="color: #a855f7; margin-bottom: 15px;">Classification Categories</h4>
+                        <div class="land-class-grid">
+                            <div class="land-class-item">
+                                <div class="land-class-emoji">🌾</div>
+                                <div class="land-class-name">Annual Crop</div>
+                            </div>
+                            <div class="land-class-item">
+                                <div class="land-class-emoji">🌲</div>
+                                <div class="land-class-name">Forest</div>
+                            </div>
+                            <div class="land-class-item">
+                                <div class="land-class-emoji">🏡</div>
+                                <div class="land-class-name">Herbaceous Vegetation</div>
+                            </div>
+                            <div class="land-class-item">
+                                <div class="land-class-emoji">🛣️</div>
+                                <div class="land-class-name">Highway</div>
+                            </div>
+                            <div class="land-class-item">
+                                <div class="land-class-emoji">🏭</div>
+                                <div class="land-class-name">Industrial</div>
+                            </div>
+                            <div class="land-class-item">
+                                <div class="land-class-emoji">🌿</div>
+                                <div class="land-class-name">Pasture</div>
+                            </div>
+                            <div class="land-class-item">
+                                <div class="land-class-emoji">🌱</div>
+                                <div class="land-class-name">Permanent Crop</div>
+                            </div>
+                            <div class="land-class-item">
+                                <div class="land-class-emoji">🏠</div>
+                                <div class="land-class-name">Residential</div>
+                            </div>
+                            <div class="land-class-item">
+                                <div class="land-class-emoji">🌊</div>
+                                <div class="land-class-name">River</div>
+                            </div>
+                            <div class="land-class-item">
+                                <div class="land-class-emoji">🏔️</div>
+                                <div class="land-class-name">Sea Lake</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 15px; color: #b8b8d4; font-size: 0.9rem;">
+                            Each class is trained on thousands of Sentinel-2 satellite images with 10m resolution, covering diverse geographical regions across Europe.
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="info-card">
+
+            <div class="info-card" onclick="toggleExpand(this)">
                 <div class="info-icon">⚡</div>
                 <h3>Fast Analysis</h3>
-                <p>Get instant results with confidence scores for each prediction</p>
+                <p>Instant classification with confidence scoring</p>
+                <div class="expand-indicator">Click to see applications ↓</div>
+                <div class="expandable-content">
+                    <div class="detail-content">
+                        <h4 style="color: #a855f7; margin-bottom: 15px;">Real-World Applications</h4>
+                        
+                        <div class="usage-item">
+                            <div class="usage-title">🌱 Agricultural Monitoring
+                                                            <div class="usage-desc">Track crop health and seasonal changes using accurate land cover classification.</div>
+                        </div>
+                        <div class="usage-item">
+                            <div class="usage-title">🏙️ Urban Development</div>
+                            <div class="usage-desc">Monitor urban sprawl and infrastructure growth for sustainable city planning.</div>
+                        </div>
+                        <div class="usage-item">
+                            <div class="usage-title">🌊 Environmental Analysis</div>
+                            <div class="usage-desc">Detect changes in water bodies, deforestation rates, and vegetation coverage.</div>
+                        </div>
+                        <div class="usage-item">
+                            <div class="usage-title">📊 Data-Driven Insights</div>
+                            <div class="usage-desc">Generate actionable reports based on satellite imagery analytics for research and policy-making.</div>
+                        </div>
+                        <p style="margin-top: 15px; color: #b8b8d4; font-size: 0.9rem;">
+                            Designed to support geospatial analysis with high accuracy across diverse terrain types and environmental conditions.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Try multiple URL configurations
-        const POSSIBLE_URLS = [
-            'https://satclassification-production.up.railway.app', // Replace with your actual Railway URL
-        ];
-        
-        let API_BASE_URL = null;
-        
-        const fileInput = document.getElementById('fileInput');
         const uploadArea = document.getElementById('uploadArea');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const predictBtn = document.getElementById('predictBtn');
-        const previewSection = document.getElementById('previewSection');
+        const fileInput = document.getElementById('fileInput');
         const imagePreview = document.getElementById('imagePreview');
+        const previewSection = document.getElementById('previewSection');
+        const predictBtn = document.getElementById('predictBtn');
         const loading = document.getElementById('loading');
-        const error = document.getElementById('error');
         const results = document.getElementById('results');
         const resultsContainer = document.getElementById('resultsContainer');
+        const error = document.getElementById('error');
         const apiStatus = document.getElementById('apiStatus');
+        const uploadBtn = document.getElementById('uploadBtn');
 
-        let selectedFile = null;
+        let selectedFile;
 
-        // Upload area interactions
-        uploadArea.addEventListener('click', () => fileInput.click());
-        uploadBtn.addEventListener('click', () => fileInput.click());
+        // Handle file selection
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
 
+        fileInput.addEventListener('change', (event) => {
+            handleFile(event.target.files[0]);
+        });
+
+        // Drag and drop events
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('dragover');
@@ -372,180 +844,128 @@
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFileSelect(files[0]);
-            }
+            handleFile(e.dataTransfer.files[0]);
         });
 
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFileSelect(e.target.files[0]);
-            }
-        });
-
-        function handleFileSelect(file) {
+        function handleFile(file) {
             if (!file.type.startsWith('image/')) {
-                showError('Please select a valid image file');
+                showError('Please upload a valid image file.');
                 return;
             }
 
             selectedFile = file;
-            
-            // Show preview
             const reader = new FileReader();
+
             reader.onload = (e) => {
                 imagePreview.src = e.target.result;
                 previewSection.style.display = 'block';
                 predictBtn.disabled = false;
-                hideError();
-                hideResults();
             };
+
             reader.readAsDataURL(file);
         }
 
+        // Predict button click handler
         predictBtn.addEventListener('click', async () => {
-            if (!selectedFile || !API_BASE_URL) {
-                showError('API not available. Please check the connection.');
+            if (!selectedFile) {
+                showError('No image selected for prediction.');
                 return;
             }
 
-            showLoading();
-            hideError();
-            hideResults();
+            const formData = new FormData();
+            formData.append('file', selectedFile);
 
             try {
-                const formData = new FormData();
-                formData.append('file', selectedFile);
+                loading.style.display = 'block';
+                results.style.display = 'none';
+                error.style.display = 'none';
+                apiStatus.style.display = 'none';
 
-                const response = await fetch(`${API_BASE_URL}/predict`, {
+                const response = await fetch('/predict', {
                     method: 'POST',
-                    body: formData,
-                    mode: 'cors'
+                    body: formData
                 });
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
 
-                const data = await response.json();
-                displayResults(data);
-
+                const result = await response.json();
+                displayResults(result);
+                
+                // Show API status if available in headers
+                const apiStatusHeader = response.headers.get('X-API-Status');
+                if (apiStatusHeader) {
+                    apiStatus.textContent = `API Status: ${apiStatusHeader}`;
+                    apiStatus.classList.remove('error');
+                    apiStatus.style.display = 'block';
+                }
             } catch (err) {
                 console.error('Prediction error:', err);
-                showError(`Prediction failed: ${err.message}`);
+                showError(`Failed to analyze image: ${err.message}`);
+                apiStatus.textContent = 'API Error - Service Unavailable';
+                apiStatus.classList.add('error');
+                apiStatus.style.display = 'block';
             } finally {
-                hideLoading();
+                loading.style.display = 'none';
             }
         });
 
-        function displayResults(data) {
-            if (!data.success) {
-                showError('Prediction failed');
-                return;
-            }
-
-            let html = '';
+        function displayResults(predictions) {
+            resultsContainer.innerHTML = '';
             
-            // Top prediction
-            const top = data.top_prediction;
-            html += `
-                <div class="result-card top-prediction">
-                    <div class="prediction-item">
-                        <div>
-                            <div class="class-name">🏆 ${top.class}</div>
-                            <div class="confidence">${top.percentage} confidence</div>
-                        </div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${top.confidence * 100}%"></div>
-                    </div>
+            // Sort predictions by confidence descending
+            predictions.sort((a, b) => b.confidence - a.confidence);
+            
+            // Create top prediction card
+            const topPred = predictions[0];
+            const topCard = document.createElement('div');
+            topCard.className = 'result-card top-prediction';
+            topCard.innerHTML = `
+                <h3 style="color: white; margin-bottom: 15px;">Top Prediction</h3>
+                <div class="prediction-item">
+                    <div class="class-name">${topPred.class}</div>
+                    <div class="confidence">${(topPred.confidence * 100).toFixed(2)}%</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${(topPred.confidence * 100)}%"></div>
                 </div>
             `;
+            resultsContainer.appendChild(topCard);
 
-            // All predictions
-            html += '<div class="result-card"><h4 style="margin-bottom: 15px;">All Classifications</h4>';
-            data.all_predictions.forEach(pred => {
-                html += `
+            // Create cards for other predictions
+            for (let i = 1; i < predictions.length; i++) {
+                const pred = predictions[i];
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `
                     <div class="prediction-item">
                         <div class="class-name">${pred.class}</div>
-                        <div class="confidence">${pred.percentage}</div>
+                        <div class="confidence">${(pred.confidence * 100).toFixed(2)}%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${(pred.confidence * 100)}%"></div>
                     </div>
                 `;
-            });
-            html += '</div>';
+                resultsContainer.appendChild(card);
+            }
 
-            resultsContainer.innerHTML = html;
             results.style.display = 'block';
-        }
-
-        function showLoading() {
-            loading.style.display = 'block';
-        }
-
-        function hideLoading() {
-            loading.style.display = 'none';
         }
 
         function showError(message) {
             error.textContent = message;
             error.style.display = 'block';
-        }
-
-        function hideError() {
-            error.style.display = 'none';
-        }
-
-        function hideResults() {
             results.style.display = 'none';
+            console.error(message);
         }
 
-        function showApiStatus(message, isError = false) {
-            apiStatus.textContent = message;
-            apiStatus.className = isError ? 'api-status error' : 'api-status';
-            apiStatus.style.display = 'block';
+        // Info card expansion functionality
+        function toggleExpand(card) {
+            card.classList.toggle('expanded');
+            const content = card.querySelector('.expandable-content');
+            content.classList.toggle('expanded');
         }
-
-        function hideApiStatus() {
-            apiStatus.style.display = 'none';
-        }
-
-        // Check API health and determine working URL
-        async function findWorkingAPI() {
-            showApiStatus('Connecting to API...', false);
-            
-            for (const url of POSSIBLE_URLS) {
-                try {
-                    console.log(`Testing API at: ${url}`);
-                    const response = await fetch(`${url}/health`, {
-                        method: 'GET',
-                        mode: 'cors',
-                        headers: {
-                            'Accept': 'application/json',
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        API_BASE_URL = url;
-                        console.log(`API connected successfully at: ${url}`);
-                        showApiStatus(`✅ Connected to API (${data.model_status})`, false);
-                        setTimeout(hideApiStatus, 3000);
-                        return true;
-                    }
-                } catch (err) {
-                    console.log(`Failed to connect to ${url}:`, err.message);
-                }
-            }
-            
-            console.error('Could not connect to any API endpoint');
-            showApiStatus('❌ Cannot connect to API. Please check if the server is running.', true);
-            return false;
-        }
-
-        // Initialize app
-        findWorkingAPI();
     </script>
 </body>
 </html>
