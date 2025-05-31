@@ -13,13 +13,14 @@ import hashlib
 
 app = FastAPI(title="Satellite Image Classifier API", version="1.0.0")
 
-# Enable CORS for frontend
+# Enhanced CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # In production, specify your frontend domain
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 BASE_DIR = Path(__file__).parent
@@ -135,6 +136,11 @@ def preprocess_image(image_bytes):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error processing image: {str(e)}")
 
+# Add OPTIONS handler for CORS preflight
+@app.options("/{full_path:path}")
+async def options_handler():
+    return {"message": "OK"}
+
 @app.get("/")
 async def root():
     model_path_obj = Path(MODEL_PATH) if isinstance(MODEL_PATH, str) else MODEL_PATH
@@ -210,6 +216,7 @@ async def predict_image(file: UploadFile = File(...)):
         }
         
     except Exception as e:
+        print(f"Prediction error: {e}")  # Server-side logging
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
 
 @app.post("/batch_predict")
